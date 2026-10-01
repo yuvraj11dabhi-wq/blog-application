@@ -11,7 +11,8 @@ body {
     line-height: 1.6;
 }
 
-/* Navigation */
+/* NAVBAR */
+
 .navbar {
     background: #111827;
     color: white;
@@ -42,7 +43,9 @@ body {
     color: #60a5fa;
 }
 
-/* Hero Section */
+
+/* HERO */
+
 .hero {
     min-height: 430px;
     display: flex;
@@ -69,21 +72,28 @@ body {
     margin-bottom: 30px;
 }
 
+
+/* BUTTON */
+
 .btn {
     display: inline-block;
     background: #2563eb;
     color: white;
     padding: 12px 24px;
+    border: none;
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .btn:hover {
     background: #1d4ed8;
 }
 
-/* Blogs */
+
+/* BLOG SECTION */
+
 .blogs {
     padding: 60px 8%;
 }
@@ -114,7 +124,7 @@ body {
 
 .blog-card p {
     color: #6b7280;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .blog-card a {
@@ -123,16 +133,119 @@ body {
     font-weight: bold;
 }
 
-/* Footer */
+
+/* FORMS */
+
+.form-section {
+    min-height: 650px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+}
+
+.form-container {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+.form-container > p {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 25px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-footer {
+    margin-top: 20px;
+}
+
+.form-footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+/* DASHBOARD */
+
+.dashboard {
+    padding: 50px 8%;
+    min-height: 650px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 20px;
+}
+
+.dashboard-header h1 {
+    font-size: 36px;
+    color: #111827;
+}
+
+.dashboard-header p {
+    color: #6b7280;
+}
+
+
+/* FOOTER */
+
 footer {
     background: #111827;
     color: white;
     text-align: center;
     padding: 20px;
-    margin-top: 30px;
 }
 
-/* Responsive Design */
+
+/* RESPONSIVE DESIGN */
+
 @media (max-width: 768px) {
 
     .navbar {
@@ -157,4 +270,17 @@ footer {
     .blog-container {
         grid-template-columns: 1fr;
     }
-  }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-header h1 {
+        font-size: 30px;
+    }
+
+    .form-container {
+        padding: 25px;
+    }
+}
