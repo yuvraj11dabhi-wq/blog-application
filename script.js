@@ -1,10 +1,14 @@
-// BlogSpace JavaScript
+// BlogSpace Frontend - Backend API
 
-// Register Form
+const API_URL = "https://blog-application-y6dk.onrender.com";
+
+
+// ==================== REGISTER ====================
+
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
-    registerForm.addEventListener("submit", function (event) {
+    registerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const name = document.getElementById("name").value;
@@ -18,119 +22,189 @@ if (registerForm) {
             return;
         }
 
-        const user = {
-            name: name,
-            email: email,
-            password: password
-        };
+        try {
+            const response = await fetch(`${API_URL}/api/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+            });
 
-        localStorage.setItem("blogUser", JSON.stringify(user));
+            const data = await response.json();
 
-        alert("Registration successful! You can now login.");
-        window.location.href = "login.html";
-    });
-}
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
 
+            alert(data.message);
+            window.location.href = "login.html";
 
-// Login Form
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        const savedUser = JSON.parse(
-            localStorage.getItem("blogUser")
-        );
-
-        if (
-            savedUser &&
-            savedUser.email === email &&
-            savedUser.password === password
-        ) {
-            localStorage.setItem("isLoggedIn", "true");
-
-            alert("Login successful!");
-            window.location.href = "dashboard.html";
-        } else {
-            alert("Invalid email or password.");
+        } catch (error) {
+            alert("Unable to connect to the server.");
+            console.error(error);
         }
     });
 }
 
 
-// Create Blog Form
-const blogForm = document.getElementById("blogForm");
+// ==================== LOGIN ====================
 
-if (blogForm) {
-    blogForm.addEventListener("submit", function (event) {
+const loginForm = document.getElementById("loginForm");
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const title = document.getElementById("blogTitle").value;
-        const author = document.getElementById("blogAuthor").value;
-        const category = document.getElementById("blogCategory").value;
-        const content = document.getElementById("blogContent").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-        const newBlog = {
-            title: title,
-            author: author,
-            category: category,
-            content: content
-        };
+        try {
+            const response = await fetch(`${API_URL}/api/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            });
 
-        let blogs =
-            JSON.parse(localStorage.getItem("blogs")) || [];
+            const data = await response.json();
 
-        blogs.push(newBlog);
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
 
-        localStorage.setItem("blogs", JSON.stringify(blogs));
+            localStorage.setItem(
+                "loggedInUser",
+                JSON.stringify(data.user)
+            );
 
-        alert("Blog published successfully!");
+            alert(data.message);
+            window.location.href = "dashboard.html";
 
-        blogForm.reset();
-
-        window.location.href = "dashboard.html";
+        } catch (error) {
+            alert("Unable to connect to the server.");
+            console.error(error);
+        }
     });
 }
 
 
-// Display Blogs on Dashboard
+// ==================== CREATE BLOG ====================
+
+const blogForm = document.getElementById("blogForm");
+
+if (blogForm) {
+    blogForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const title =
+            document.getElementById("blogTitle").value;
+
+        const author =
+            document.getElementById("blogAuthor").value;
+
+        const category =
+            document.getElementById("blogCategory").value;
+
+        const content =
+            document.getElementById("blogContent").value;
+
+        try {
+            const response = await fetch(`${API_URL}/api/blogs`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title,
+                    author,
+                    category,
+                    content
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
+
+            alert(data.message);
+
+            blogForm.reset();
+
+            window.location.href = "dashboard.html";
+
+        } catch (error) {
+            alert("Unable to connect to the server.");
+            console.error(error);
+        }
+    });
+}
+
+
+// ==================== DASHBOARD ====================
+
 const dashboardBlogs =
     document.getElementById("dashboardBlogs");
 
 if (dashboardBlogs) {
 
-    const blogs =
-        JSON.parse(localStorage.getItem("blogs")) || [];
+    async function loadBlogs() {
 
-    if (blogs.length > 0) {
+        try {
+            const response =
+                await fetch(`${API_URL}/api/blogs`);
 
-        dashboardBlogs.innerHTML = "";
+            const blogs = await response.json();
 
-        blogs.forEach(function (blog) {
+            if (blogs.length === 0) {
+                return;
+            }
 
-            const article = document.createElement("article");
+            dashboardBlogs.innerHTML = "";
 
-            article.className = "blog-card";
+            blogs.forEach(function (blog) {
 
-            article.innerHTML = `
-                <h3>${blog.title}</h3>
+                const article =
+                    document.createElement("article");
 
-                <p>
-                    <strong>Author:</strong> ${blog.author}
-                </p>
+                article.className = "blog-card";
 
-                <p>
-                    <strong>Category:</strong> ${blog.category}
-                </p>
+                article.innerHTML = `
+                    <h3>${blog.title}</h3>
 
-                <p>${blog.content}</p>
-            `;
+                    <p>
+                        <strong>Author:</strong>
+                        ${blog.author}
+                    </p>
 
-            dashboardBlogs.appendChild(article);
-        });
+                    <p>
+                        <strong>Category:</strong>
+                        ${blog.category}
+                    </p>
+
+                    <p>${blog.content}</p>
+                `;
+
+                dashboardBlogs.appendChild(article);
+            });
+
+        } catch (error) {
+            console.error("Error loading blogs:", error);
+        }
     }
+
+    loadBlogs();
 }
