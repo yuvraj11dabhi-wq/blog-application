@@ -109,6 +109,6 @@ app.get("/api/blogs", (req, res) => {
     res.json(blogs);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`BlogSpace backend running on port ${PORT}`);
 });
