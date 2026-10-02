@@ -1,10 +1,7 @@
 // BlogSpace Frontend - Backend API
-
 const API_URL = "https://blog-application-y6dk.onrender.com";
 
-
-// ==================== REGISTER ====================
-
+// REGISTER
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
@@ -14,8 +11,7 @@ if (registerForm) {
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        const confirmPassword =
-            document.getElementById("confirmPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
@@ -53,8 +49,7 @@ if (registerForm) {
 }
 
 
-// ==================== LOGIN ====================
-
+// LOGIN
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
@@ -83,10 +78,7 @@ if (loginForm) {
                 return;
             }
 
-            localStorage.setItem(
-                "loggedInUser",
-                JSON.stringify(data.user)
-            );
+            localStorage.setItem("loggedInUser", JSON.stringify(data.user));
 
             alert(data.message);
             window.location.href = "dashboard.html";
@@ -99,25 +91,17 @@ if (loginForm) {
 }
 
 
-// ==================== CREATE BLOG ====================
-
+// CREATE BLOG
 const blogForm = document.getElementById("blogForm");
 
 if (blogForm) {
     blogForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const title =
-            document.getElementById("blogTitle").value;
-
-        const author =
-            document.getElementById("blogAuthor").value;
-
-        const category =
-            document.getElementById("blogCategory").value;
-
-        const content =
-            document.getElementById("blogContent").value;
+        const title = document.getElementById("blogTitle").value;
+        const author = document.getElementById("blogAuthor").value;
+        const category = document.getElementById("blogCategory").value;
+        const content = document.getElementById("blogContent").value;
 
         try {
             const response = await fetch(`${API_URL}/api/blogs`, {
@@ -154,22 +138,22 @@ if (blogForm) {
 }
 
 
-// ==================== DASHBOARD ====================
-
-const dashboardBlogs =
-    document.getElementById("dashboardBlogs");
+// DASHBOARD
+const dashboardBlogs = document.getElementById("dashboardBlogs");
 
 if (dashboardBlogs) {
 
     async function loadBlogs() {
 
         try {
-            const response =
-                await fetch(`${API_URL}/api/blogs`);
+
+            const response = await fetch(`${API_URL}/api/blogs`);
 
             const blogs = await response.json();
 
             if (blogs.length === 0) {
+                dashboardBlogs.innerHTML =
+                    "<p>No blogs available yet.</p>";
                 return;
             }
 
@@ -177,8 +161,7 @@ if (dashboardBlogs) {
 
             blogs.forEach(function (blog) {
 
-                const article =
-                    document.createElement("article");
+                const article = document.createElement("article");
 
                 article.className = "blog-card";
 
@@ -195,14 +178,24 @@ if (dashboardBlogs) {
                         ${blog.category}
                     </p>
 
-                    <p>${blog.content}</p>
+                    <p>
+                        ${blog.content}
+                    </p>
+
+                    <a href="blog-details.html?id=${blog._id}" class="btn">
+                        Read More
+                    </a>
                 `;
 
                 dashboardBlogs.appendChild(article);
             });
 
         } catch (error) {
+
             console.error("Error loading blogs:", error);
+
+            dashboardBlogs.innerHTML =
+                "<p>Unable to load blogs.</p>";
         }
     }
 
