@@ -6,30 +6,13 @@ const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
 
-// ==================== MONGODB CONNECTION ====================
-
-mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log("MongoDB connected successfully!");
-
-        app.listen(PORT, "0.0.0.0", () => {
-            console.log(
-                `BlogSpace backend running on port ${PORT}`
-            );
-        });
-    })
-    .catch((error) => {
-        console.error("MongoDB connection failed:", error);
-    });
-
-
-// ==================== USER MODEL ====================
+// ===============================
+// USER MODEL
+// ===============================
 
 const userSchema = new mongoose.Schema(
     {
@@ -58,7 +41,9 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 
-// ==================== BLOG MODEL ====================
+// ===============================
+// BLOG MODEL
+// ===============================
 
 const blogSchema = new mongoose.Schema(
     {
@@ -90,7 +75,9 @@ const blogSchema = new mongoose.Schema(
 const Blog = mongoose.model("Blog", blogSchema);
 
 
-// ==================== HOME / TEST API ====================
+// ===============================
+// HOME
+// ===============================
 
 app.get("/", (req, res) => {
     res.json({
@@ -99,7 +86,9 @@ app.get("/", (req, res) => {
 });
 
 
-// ==================== REGISTER API ====================
+// ===============================
+// REGISTER
+// ===============================
 
 app.post("/api/register", async (req, res) => {
 
@@ -123,7 +112,6 @@ app.post("/api/register", async (req, res) => {
             });
         }
 
-        // Hash password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
@@ -133,12 +121,15 @@ app.post("/api/register", async (req, res) => {
         });
 
         res.status(201).json({
+
             message: "Registration successful!",
+
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email
             }
+
         });
 
     } catch (error) {
@@ -152,7 +143,9 @@ app.post("/api/register", async (req, res) => {
 });
 
 
-// ==================== LOGIN API ====================
+// ===============================
+// LOGIN
+// ===============================
 
 app.post("/api/login", async (req, res) => {
 
@@ -176,7 +169,6 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        // Compare entered password with hashed password
         const passwordMatch = await bcrypt.compare(
             password,
             user.password
@@ -189,12 +181,15 @@ app.post("/api/login", async (req, res) => {
         }
 
         res.json({
+
             message: "Login successful!",
+
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email
             }
+
         });
 
     } catch (error) {
@@ -208,7 +203,9 @@ app.post("/api/login", async (req, res) => {
 });
 
 
-// ==================== CREATE BLOG API ====================
+// ===============================
+// CREATE BLOG
+// ===============================
 
 app.post("/api/blogs", async (req, res) => {
 
@@ -222,78 +219,13 @@ app.post("/api/blogs", async (req, res) => {
         } = req.body;
 
         if (!title || !author || !category || !content) {
+
             return res.status(400).json({
                 message: "All blog fields are required."
             });
+
         }
 
         const blog = await Blog.create({
             title,
-            author,
-            category,
-            content
-        });
-
-        res.status(201).json({
-            message: "Blog published successfully!",
-            blog
-        });
-
-    } catch (error) {
-
-        console.error("Blog creation error:", error);
-
-        res.status(500).json({
-            message: "Server error while publishing blog."
-        });
-    }
-});
-
-
-// ==================== GET ALL BLOGS ====================
-
-app.get("/api/blogs", async (req, res) => {
-
-    try {
-
-        const blogs = await Blog.find()
-            .sort({ createdAt: -1 });
-
-        res.json(blogs);
-
-    } catch (error) {
-
-        console.error("Error loading blogs:", error);
-
-        res.status(500).json({
-            message: "Server error while loading blogs."
-        });
-    }
-});
-
-
-// ==================== GET SINGLE BLOG ====================
-
-app.get("/api/blogs/:id", async (req, res) => {
-
-    try {
-
-        const blog = await Blog.findById(req.params.id);
-
-        if (!blog) {
-            return res.status(404).json({
-                message: "Blog not found."
-            });
-        }
-
-        res.json(blog);
-
-    } catch (error) {
-
-        console.error("Error loading blog:", error);
-
-        res.status(400).json({
-            message: "Invalid blog ID."
-        });
-    }
-});
+            author
