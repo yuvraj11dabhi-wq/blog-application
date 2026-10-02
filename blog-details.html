@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details - BlogSpace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="logo">BlogSpace</div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="create-blog.html">Create Blog</a>
+        </div>
+    </nav>
+</header>
+
+<main class="form-section">
+
+    <article class="form-container">
+
+        <h1 id="blogTitle">Loading...</h1>
+
+        <p>
+            <strong>Author:</strong>
+            <span id="blogAuthor">Loading...</span>
+        </p>
+
+        <p>
+            <strong>Category:</strong>
+            <span id="blogCategory">Loading...</span>
+        </p>
+
+        <hr>
+
+        <p id="blogContent">
+            Loading blog content...
+        </p>
+
+        <div class="form-footer">
+            <a href="dashboard.html">← Back to Dashboard</a>
+        </div>
+
+    </article>
+
+</main>
+
+<footer>
+    <p>© 2026 BlogSpace. All Rights Reserved.</p>
+</footer>
+
+<script>
+const API_URL = "https://blog-application-y6dk.onrender.com";
+
+const params = new URLSearchParams(window.location.search);
+const blogId = params.get("id");
+
+async function loadBlog() {
+
+    if (!blogId) {
+        document.getElementById("blogTitle").textContent = "Blog not found";
+        document.getElementById("blogContent").textContent =
+            "No blog ID was provided.";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`${API_URL}/api/blogs/${blogId}`);
+
+        const blog = await response.json();
+
+        if (!response.ok) {
+            document.getElementById("blogTitle").textContent = "Blog not found";
+            document.getElementById("blogContent").textContent =
+                blog.message || "Unable to load blog.";
+            return;
+        }
+
+        document.getElementById("blogTitle").textContent = blog.title;
+        document.getElementById("blogAuthor").textContent = blog.author;
+        document.getElementById("blogCategory").textContent = blog.category;
+        document.getElementById("blogContent").textContent = blog.content;
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("blogTitle").textContent =
+            "Unable to load blog";
+
+        document.getElementById("blogContent").textContent =
+            "Please check your internet connection and try again.";
+    }
+}
+
+loadBlog();
+</script>
+
+</body>
+</html>
