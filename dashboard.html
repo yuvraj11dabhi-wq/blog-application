@@ -15,9 +15,20 @@
 
         <div class="nav-links">
             <a href="index.html">Home</a>
-            <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
             <a href="dashboard.html">Dashboard</a>
+            <a href="create-blog.html">Create Blog</a>
+
+            <span id="userName" style="color: white; font-weight: bold;">
+                User
+            </span>
+
+            <button
+                onclick="logout()"
+                class="btn"
+                style="padding: 8px 15px;"
+            >
+                Logout
+            </button>
         </div>
     </nav>
 </header>
@@ -25,10 +36,15 @@
 <main>
 
     <section class="dashboard">
+
         <div class="dashboard-header">
             <div>
                 <h1>My Dashboard</h1>
-                <p>Manage your blogs and create new stories.</p>
+
+                <p>
+                    Welcome, <strong id="welcomeName">User</strong>!
+                    Manage your blogs and create new stories.
+                </p>
             </div>
 
             <a href="create-blog.html" class="btn">
@@ -36,18 +52,34 @@
             </a>
         </div>
 
+        <!-- USER PROFILE -->
+        <div
+            class="blog-card"
+            style="margin-bottom: 30px;"
+        >
+            <h2>User Profile</h2>
+
+            <p>
+                <strong>Name:</strong>
+                <span id="profileName">Loading...</span>
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                <span id="profileEmail">Loading...</span>
+            </p>
+        </div>
+
+        <!-- BLOGS -->
         <div class="blog-container" id="dashboardBlogs">
 
             <article class="blog-card">
-                <h3>Welcome to BlogSpace</h3>
-                <p>
-                    This is your dashboard. Your created blogs
-                    will appear here.
-                </p>
-                <a href="create-blog.html">Create your first blog →</a>
+                <h3>Loading your blogs...</h3>
+                <p>Please wait while we load your blogs.</p>
             </article>
 
         </div>
+
     </section>
 
 </main>
@@ -57,6 +89,80 @@
 </footer>
 
 <script src="script.js"></script>
+
+<script>
+    // LOAD USER PROFILE
+    async function loadProfile() {
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "https://blog-application-y6dk.onrender.com/api/profile",
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const user = await response.json();
+
+            if (!response.ok) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("loggedInUser");
+
+                alert(user.message || "Please login again.");
+
+                window.location.href = "login.html";
+                return;
+            }
+
+            document.getElementById("userName").textContent =
+                user.name;
+
+            document.getElementById("welcomeName").textContent =
+                user.name;
+
+            document.getElementById("profileName").textContent =
+                user.name;
+
+            document.getElementById("profileEmail").textContent =
+                user.email;
+
+        } catch (error) {
+
+            console.error("Profile loading error:", error);
+
+            document.getElementById("profileName").textContent =
+                "Unable to load";
+
+            document.getElementById("profileEmail").textContent =
+                "Unable to load";
+        }
+    }
+
+
+    // LOGOUT
+    function logout() {
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("loggedInUser");
+
+        alert("You have been logged out successfully.");
+
+        window.location.href = "login.html";
+    }
+
+
+    loadProfile();
+</script>
 
 </body>
 </html>
