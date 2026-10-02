@@ -182,9 +182,25 @@ if (dashboardBlogs) {
                         ${blog.content}
                     </p>
 
-                    <a href="blog-details.html?id=${blog._id}" class="btn">
-                        Read More
-                    </a>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+                        <a href="blog-details.html?id=${blog._id}" class="btn">
+                            Read More
+                        </a>
+
+                        <button
+                            class="btn"
+                            onclick="editBlog('${blog._id}')">
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn"
+                            onclick="deleteBlog('${blog._id}')">
+                            Delete
+                        </button>
+
+                    </div>
                 `;
 
                 dashboardBlogs.appendChild(article);
@@ -200,4 +216,117 @@ if (dashboardBlogs) {
     }
 
     loadBlogs();
+}
+
+
+// EDIT BLOG
+async function editBlog(id) {
+
+    try {
+
+        const response = await fetch(`${API_URL}/api/blogs/${id}`);
+
+        const blog = await response.json();
+
+        if (!response.ok) {
+            alert(blog.message);
+            return;
+        }
+
+        const title = prompt("Enter blog title:", blog.title);
+
+        if (title === null) {
+            return;
+        }
+
+        const author = prompt("Enter author name:", blog.author);
+
+        if (author === null) {
+            return;
+        }
+
+        const category = prompt("Enter category:", blog.category);
+
+        if (category === null) {
+            return;
+        }
+
+        const content = prompt("Enter blog content:", blog.content);
+
+        if (content === null) {
+            return;
+        }
+
+        if (!title || !author || !category || !content) {
+            alert("All blog fields are required.");
+            return;
+        }
+
+        const updateResponse = await fetch(`${API_URL}/api/blogs/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title,
+                author,
+                category,
+                content
+            })
+        });
+
+        const data = await updateResponse.json();
+
+        if (!updateResponse.ok) {
+            alert(data.message);
+            return;
+        }
+
+        alert(data.message);
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error("Error updating blog:", error);
+
+        alert("Unable to update blog.");
+    }
+}
+
+
+// DELETE BLOG
+async function deleteBlog(id) {
+
+    const confirmDelete = confirm(
+        "Are you sure you want to delete this blog?"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`${API_URL}/api/blogs/${id}`, {
+            method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        alert(data.message);
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error("Error deleting blog:", error);
+
+        alert("Unable to delete blog.");
+    }
 }
